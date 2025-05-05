@@ -84,6 +84,7 @@ Zfetch.prototype.down = function( event ) {
 
 	if (this.capture) {
 		this.startElement.setPointerCapture( event.pointerId );
+		this.startElement.addEventListener( 'lostpointercapture', this );
 	}
 
 	this.downX = event.pageX;
@@ -127,6 +128,11 @@ Zfetch.prototype.moveDeadzone = function( event ) {
 Zfetch.prototype.up = function( event ) {
 	if ( event.pointerId != this.downId ) return;
 
+	if ( this.capture ) {
+		this.startElement.releasePointerCapture( event.pointerId );
+		this.startElement.removeEventListener( 'lostpointercapture', this );
+	}
+
 	if (DEBUG) console.log("going uuuuup", event);
 
 	if ( this.moveX || this.moveY ) {
@@ -143,7 +149,8 @@ Zfetch.prototype.up = function( event ) {
 Zfetch.prototype.onpointerdown = Zfetch.prototype.down;
 Zfetch.prototype.onpointermove = Zfetch.prototype.move;
 Zfetch.prototype.onpointerup =
-Zfetch.prototype.onpointercancel = Zfetch.prototype.up;
+Zfetch.prototype.onpointercancel =
+Zfetch.prototype.onlostpointercapture = Zfetch.prototype.up;
 
 Zfetch.prototype.dispatchDragStart = function( event ) {
 	this.dragEvent = null;
